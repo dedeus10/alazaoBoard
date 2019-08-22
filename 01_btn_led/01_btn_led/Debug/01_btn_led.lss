@@ -1,0 +1,150 @@
+
+01_btn_led.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00800100  000000d8  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         00000084  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .comment      00000030  00000000  00000000  000000d8  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000108  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000020  00000000  00000000  00000144  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000006c1  00000000  00000000  00000164  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000613  00000000  00000000  00000825  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   00000272  00000000  00000000  00000e38  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000024  00000000  00000000  000010ac  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    0000036a  00000000  00000000  000010d0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    00000048  00000000  00000000  0000143a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000010  00000000  00000000  00001482  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	13 c0       	rjmp	.+38     	; 0x28 <__ctors_end>
+   2:	1a c0       	rjmp	.+52     	; 0x38 <__bad_interrupt>
+   4:	19 c0       	rjmp	.+50     	; 0x38 <__bad_interrupt>
+   6:	18 c0       	rjmp	.+48     	; 0x38 <__bad_interrupt>
+   8:	17 c0       	rjmp	.+46     	; 0x38 <__bad_interrupt>
+   a:	16 c0       	rjmp	.+44     	; 0x38 <__bad_interrupt>
+   c:	15 c0       	rjmp	.+42     	; 0x38 <__bad_interrupt>
+   e:	14 c0       	rjmp	.+40     	; 0x38 <__bad_interrupt>
+  10:	13 c0       	rjmp	.+38     	; 0x38 <__bad_interrupt>
+  12:	12 c0       	rjmp	.+36     	; 0x38 <__bad_interrupt>
+  14:	11 c0       	rjmp	.+34     	; 0x38 <__bad_interrupt>
+  16:	10 c0       	rjmp	.+32     	; 0x38 <__bad_interrupt>
+  18:	0f c0       	rjmp	.+30     	; 0x38 <__bad_interrupt>
+  1a:	0e c0       	rjmp	.+28     	; 0x38 <__bad_interrupt>
+  1c:	0d c0       	rjmp	.+26     	; 0x38 <__bad_interrupt>
+  1e:	0c c0       	rjmp	.+24     	; 0x38 <__bad_interrupt>
+  20:	0b c0       	rjmp	.+22     	; 0x38 <__bad_interrupt>
+  22:	0a c0       	rjmp	.+20     	; 0x38 <__bad_interrupt>
+  24:	09 c0       	rjmp	.+18     	; 0x38 <__bad_interrupt>
+  26:	08 c0       	rjmp	.+16     	; 0x38 <__bad_interrupt>
+
+00000028 <__ctors_end>:
+  28:	11 24       	eor	r1, r1
+  2a:	1f be       	out	0x3f, r1	; 63
+  2c:	cf ef       	ldi	r28, 0xFF	; 255
+  2e:	d2 e0       	ldi	r29, 0x02	; 2
+  30:	de bf       	out	0x3e, r29	; 62
+  32:	cd bf       	out	0x3d, r28	; 61
+  34:	02 d0       	rcall	.+4      	; 0x3a <main>
+  36:	24 c0       	rjmp	.+72     	; 0x80 <_exit>
+
+00000038 <__bad_interrupt>:
+  38:	e3 cf       	rjmp	.-58     	; 0x0 <__vectors>
+
+0000003a <main>:
+int main(void)
+{
+	//Configura os pinos como entrada ou saida
+	//1 saida | 0 entrada
+	//0b76543210
+	DDRB = 0b01000000;
+  3a:	80 e4       	ldi	r24, 0x40	; 64
+  3c:	84 b9       	out	0x04, r24	; 4
+	DDRC = 0b00000000;
+  3e:	17 b8       	out	0x07, r1	; 7
+	
+	//Ativa pull-up para botoes
+	PORTB |= ( (1 << PORTB2) );
+  40:	2a 9a       	sbi	0x05, 2	; 5
+	PORTD |= ( (1 << PORTD0) );
+  42:	58 9a       	sbi	0x0b, 0	; 11
+	
+	//Inicialmente apagado
+	clr_bit(PORTB, user_led);
+  44:	2e 98       	cbi	0x05, 6	; 5
+	
+	while (1)
+	{
+		/* ---------- BTN UP ------------ */
+		if ((tst_bit(PINB, btn_up) == 0))
+  46:	1a 99       	sbic	0x03, 2	; 3
+  48:	0c c0       	rjmp	.+24     	; 0x62 <__SREG__+0x23>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  4a:	2f ef       	ldi	r18, 0xFF	; 255
+  4c:	81 ee       	ldi	r24, 0xE1	; 225
+  4e:	94 e0       	ldi	r25, 0x04	; 4
+  50:	21 50       	subi	r18, 0x01	; 1
+  52:	80 40       	sbci	r24, 0x00	; 0
+  54:	90 40       	sbci	r25, 0x00	; 0
+  56:	e1 f7       	brne	.-8      	; 0x50 <__SREG__+0x11>
+  58:	00 c0       	rjmp	.+0      	; 0x5a <__SREG__+0x1b>
+  5a:	00 00       	nop
+		{
+			_delay_ms(200);
+			while ((tst_bit(PINB, btn_up) == 0)) {}
+  5c:	1a 9b       	sbis	0x03, 2	; 3
+  5e:	fe cf       	rjmp	.-4      	; 0x5c <__SREG__+0x1d>
+			
+			//Coloca em nivel alto o led
+			set_bit(PORTB, user_led);
+  60:	2e 9a       	sbi	0x05, 6	; 5
+		}
+		
+		/* ---------- BTN DOWN ------------ */
+		if ((tst_bit(PIND, btn_down) == 0))
+  62:	48 99       	sbic	0x09, 0	; 9
+  64:	f0 cf       	rjmp	.-32     	; 0x46 <__SREG__+0x7>
+  66:	2f ef       	ldi	r18, 0xFF	; 255
+  68:	81 ee       	ldi	r24, 0xE1	; 225
+  6a:	94 e0       	ldi	r25, 0x04	; 4
+  6c:	21 50       	subi	r18, 0x01	; 1
+  6e:	80 40       	sbci	r24, 0x00	; 0
+  70:	90 40       	sbci	r25, 0x00	; 0
+  72:	e1 f7       	brne	.-8      	; 0x6c <__SREG__+0x2d>
+  74:	00 c0       	rjmp	.+0      	; 0x76 <__SREG__+0x37>
+  76:	00 00       	nop
+		{
+			_delay_ms(200);
+			while ((tst_bit(PIND, btn_down) == 0)) {}
+  78:	48 9b       	sbis	0x09, 0	; 9
+  7a:	fe cf       	rjmp	.-4      	; 0x78 <__SREG__+0x39>
+			
+			//Coloca em nivel baixo o led
+			clr_bit(PORTB, user_led);
+  7c:	2e 98       	cbi	0x05, 6	; 5
+  7e:	e3 cf       	rjmp	.-58     	; 0x46 <__SREG__+0x7>
+
+00000080 <_exit>:
+  80:	f8 94       	cli
+
+00000082 <__stop_program>:
+  82:	ff cf       	rjmp	.-2      	; 0x82 <__stop_program>

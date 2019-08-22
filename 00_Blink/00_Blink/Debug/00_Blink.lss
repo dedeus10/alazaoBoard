@@ -1,0 +1,119 @@
+
+00_Blink.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00800100  000000c0  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         0000006c  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .comment      00000030  00000000  00000000  000000c0  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000000f0  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000020  00000000  00000000  0000012c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000006c1  00000000  00000000  0000014c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000613  00000000  00000000  0000080d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   00000247  00000000  00000000  00000e20  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000024  00000000  00000000  00001068  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000366  00000000  00000000  0000108c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    00000048  00000000  00000000  000013f2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000010  00000000  00000000  0000143a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	13 c0       	rjmp	.+38     	; 0x28 <__ctors_end>
+   2:	1a c0       	rjmp	.+52     	; 0x38 <__bad_interrupt>
+   4:	19 c0       	rjmp	.+50     	; 0x38 <__bad_interrupt>
+   6:	18 c0       	rjmp	.+48     	; 0x38 <__bad_interrupt>
+   8:	17 c0       	rjmp	.+46     	; 0x38 <__bad_interrupt>
+   a:	16 c0       	rjmp	.+44     	; 0x38 <__bad_interrupt>
+   c:	15 c0       	rjmp	.+42     	; 0x38 <__bad_interrupt>
+   e:	14 c0       	rjmp	.+40     	; 0x38 <__bad_interrupt>
+  10:	13 c0       	rjmp	.+38     	; 0x38 <__bad_interrupt>
+  12:	12 c0       	rjmp	.+36     	; 0x38 <__bad_interrupt>
+  14:	11 c0       	rjmp	.+34     	; 0x38 <__bad_interrupt>
+  16:	10 c0       	rjmp	.+32     	; 0x38 <__bad_interrupt>
+  18:	0f c0       	rjmp	.+30     	; 0x38 <__bad_interrupt>
+  1a:	0e c0       	rjmp	.+28     	; 0x38 <__bad_interrupt>
+  1c:	0d c0       	rjmp	.+26     	; 0x38 <__bad_interrupt>
+  1e:	0c c0       	rjmp	.+24     	; 0x38 <__bad_interrupt>
+  20:	0b c0       	rjmp	.+22     	; 0x38 <__bad_interrupt>
+  22:	0a c0       	rjmp	.+20     	; 0x38 <__bad_interrupt>
+  24:	09 c0       	rjmp	.+18     	; 0x38 <__bad_interrupt>
+  26:	08 c0       	rjmp	.+16     	; 0x38 <__bad_interrupt>
+
+00000028 <__ctors_end>:
+  28:	11 24       	eor	r1, r1
+  2a:	1f be       	out	0x3f, r1	; 63
+  2c:	cf ef       	ldi	r28, 0xFF	; 255
+  2e:	d2 e0       	ldi	r29, 0x02	; 2
+  30:	de bf       	out	0x3e, r29	; 62
+  32:	cd bf       	out	0x3d, r28	; 61
+  34:	02 d0       	rcall	.+4      	; 0x3a <main>
+  36:	18 c0       	rjmp	.+48     	; 0x68 <_exit>
+
+00000038 <__bad_interrupt>:
+  38:	e3 cf       	rjmp	.-58     	; 0x0 <__vectors>
+
+0000003a <main>:
+int main(void)
+{
+    //Configura os pinos como entrada ou saida
+	//1 saida | 0 entrada
+	//0b76543210
+	DDRB = 0b01000000;
+  3a:	80 e4       	ldi	r24, 0x40	; 64
+  3c:	84 b9       	out	0x04, r24	; 4
+    while (1) 
+    {
+		//Coloca em nivel alto o led
+		set_bit(PORTB, user_led);
+  3e:	2e 9a       	sbi	0x05, 6	; 5
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  40:	2f ef       	ldi	r18, 0xFF	; 255
+  42:	89 e6       	ldi	r24, 0x69	; 105
+  44:	98 e1       	ldi	r25, 0x18	; 24
+  46:	21 50       	subi	r18, 0x01	; 1
+  48:	80 40       	sbci	r24, 0x00	; 0
+  4a:	90 40       	sbci	r25, 0x00	; 0
+  4c:	e1 f7       	brne	.-8      	; 0x46 <__SREG__+0x7>
+  4e:	00 c0       	rjmp	.+0      	; 0x50 <__SREG__+0x11>
+  50:	00 00       	nop
+		
+		//Espera 1s
+		_delay_ms(1000);
+		
+		//Coloca em nivel baixo o led
+		clr_bit(PORTB, user_led);
+  52:	2e 98       	cbi	0x05, 6	; 5
+  54:	2f ef       	ldi	r18, 0xFF	; 255
+  56:	89 e6       	ldi	r24, 0x69	; 105
+  58:	98 e1       	ldi	r25, 0x18	; 24
+  5a:	21 50       	subi	r18, 0x01	; 1
+  5c:	80 40       	sbci	r24, 0x00	; 0
+  5e:	90 40       	sbci	r25, 0x00	; 0
+  60:	e1 f7       	brne	.-8      	; 0x5a <__SREG__+0x1b>
+  62:	00 c0       	rjmp	.+0      	; 0x64 <__SREG__+0x25>
+  64:	00 00       	nop
+  66:	eb cf       	rjmp	.-42     	; 0x3e <__SP_H__>
+
+00000068 <_exit>:
+  68:	f8 94       	cli
+
+0000006a <__stop_program>:
+  6a:	ff cf       	rjmp	.-2      	; 0x6a <__stop_program>
