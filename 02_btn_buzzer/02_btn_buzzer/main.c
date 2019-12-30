@@ -5,7 +5,7 @@
 --                                                                            --
 --------------------------------------------------------------------------------
 --                                                                            --
--- Design      : Alazão Board  v1.0	                                          --
+-- Design      : Alazï¿½o Board  v1.0	                                          --
 -- File		   : main.c					                                 	  --
 -- Author      : Luis Felipe de Deus                                          --
 --                                                                            --
@@ -41,7 +41,7 @@
 int main(void)
 {
 	//Configura os pinos como entrada ou saida
-	//1 saida | 0 entrada
+	//1 saida | 0 entrada 
 	//0b76543210
 	DDRA = 0b0010;
 	DDRB = 0b01000000;
