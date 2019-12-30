@@ -63,7 +63,7 @@ int main(void)
 	Lcd4_Set_Cursor(1,0);
 	Lcd4_Write_String("Eng. Comp. UFSM");
 	Lcd4_Set_Cursor(2,0);
-	Lcd4_Write_String("  Hello World  ");
+	Lcd4_Write_String(" s Hello World  ");
 	_delay_ms(3000);
 	
 	while (1)
