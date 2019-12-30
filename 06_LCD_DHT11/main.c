@@ -5,19 +5,19 @@
 --                                                                            --
 --------------------------------------------------------------------------------
 --                                                                            --
--- Design      : Alaz�o Board  v1.0	                                          --
+-- Design      : Alazao Board  v1.0	                                          --
 -- File		   : main.c					                                 	  --
 -- Author      : Luis Felipe de Deus                                          --
 --                                                                            --
 --------------------------------------------------------------------------------
 --                                                                            --
--- Created     : 20 Aug 2019                                                  --
--- Update      : 21 Aug 2019                                                  --
+-- Created     : 16 Dez 2019                                                  --
+-- Update      : 16 Dez 2019                                                  --
 --------------------------------------------------------------------------------
 --                              Overview                                      --
 --                                                                            --
 --  Microcontroller: ATtiny88 - Atmel/Microchip								  --
---  Features: Hello World no LCD											  --
+--  Features: LCD - Calendar with Real Time Clock(RTC)						--
 --------------------------------------------------------------------------------
 */
 
@@ -33,7 +33,6 @@
 #define RS eS_PORTC7
 #define EN eS_PORTA0
 
-
 //Bibliotecas de sistema
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -42,11 +41,23 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 //Biblioteca de dev
 #include "cabecalho.h"
 #include "lcd.h"
+#include "dht.c"
 
+void lcd_begin()
+{
+	Lcd4_Init();
+	Lcd4_Clear();
+	Lcd4_Set_Cursor(1, 0);
+	Lcd4_Write_String("Eng. Comp. UFSM");
+	Lcd4_Set_Cursor(2, 0);
+	Lcd4_Write_String("  Hello World  ");
+	_delay_ms(3000);
+}
 
 int main(void)
 {
@@ -54,20 +65,50 @@ int main(void)
 	//1 saida | 0 entrada
 	//0b76543210
 	DDRA = 0b1101;
-	DDRC = 0b10000000;
+	DDRC = 0b10001000;
 	DDRD = 0b00011000;
 
-	
-	Lcd4_Init();
-	Lcd4_Clear();
-	Lcd4_Set_Cursor(1,0);
-	Lcd4_Write_String("Eng. Comp. UFSM");
-	Lcd4_Set_Cursor(2,0);
-	Lcd4_Write_String("  Hello World  ");
-	_delay_ms(3000);
-	
+	//Ativa pull-up para botoes
+	PORTB |= ((1 << PORTB2));
+	PORTD |= ((1 << PORTD0));
+
+	//Inicialmente ligado
+	set_bit(PORTB, user_led);
+
+	//Inicia LCD com uma escrita
+	lcd_begin();
+
+	//init interrupt
+	sei();
+
+	char printbuff[100];
+	int8_t temperature = 0;
+	int8_t humidity = 0;
+
 	while (1)
 	{
+		if (dht_gettemperaturehumidity(&temperature, &humidity) != -1)
+		{
+
+			sprintf(printbuff,"Temp.:%u C",temperature);
+			Lcd4_Clear();
+			Lcd4_Set_Cursor(1, 0);
+			Lcd4_Write_String(printbuff);
+
+			sprintf(printbuff,"Humid.:%u%%",humidity);
+			Lcd4_Set_Cursor(2, 0);
+			Lcd4_Write_String(printbuff);
+		}
+		else
+		{
+
+			Lcd4_Clear();
+			Lcd4_Set_Cursor(1, 6);
+			Lcd4_Write_String("Error");
+			Lcd4_Set_Cursor(2, 2);
+			Lcd4_Write_String("DHT Not found");
+		}
+
+		_delay_ms(1500);
 	}
 }
-

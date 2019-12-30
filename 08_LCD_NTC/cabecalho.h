@@ -6,7 +6,7 @@
 --------------------------------------------------------------------------------
 --                                                                            --
 -- Design      : Alaz�o Board  v1.0	                                          --
--- File		   : main.c					                                 	  --
+-- File		   : cabecalhoh.h			                                   	  --
 -- Author      : Luis Felipe de Deus                                          --
 --                                                                            --
 --------------------------------------------------------------------------------
@@ -21,53 +21,37 @@
 --------------------------------------------------------------------------------
 */
 
-#ifndef F_CPU
-#define F_CPU 8000000UL // 8 MHz clock speed
-#endif
-
-//Display Ports
-#define D4 eS_PORTD3
-#define D5 eS_PORTD4
-#define D6 eS_PORTA2
-#define D7 eS_PORTA3
-#define RS eS_PORTC7
-#define EN eS_PORTA0
-
-
-//Bibliotecas de sistema
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <avr/cpufunc.h>
 #include <util/delay.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-//Biblioteca de dev
-#include "cabecalho.h"
-#include "lcd.h"
+/*############## I/0 ###################*/
+#define user_led PINB6
+#define btn_up PINB2
+#define buzzer PINA1
 
+/*############## CONSTANTES ###################*/
+#define TIME_DELAY 300
+#define TAM_SAMPLES 30.0      //Tamanho de amostras do NTC
+#define AD_PRECISION 1023     //Precisão do canal AD-1 8 bits (255) 10 bits (1023)
+#define B_coefficient 3600.00 /* B coefficient of NTC Thermistor 3950 - 3100*/
+#define Room_temperature 25.00
+#define Series_Resistance 10000.00
 
-int main(void)
-{
-	//Configura os pinos como entrada ou saida
-	//1 saida | 0 entrada
-	//0b76543210
-	DDRA = 0b1101;
-	DDRC = 0b10000000;
-	DDRD = 0b00011000;
+//##############    MACROS  #####################
+#define set_bit(Y, bit_x) (Y |= (1 << bit_x))  //ativa o bit x da vari�vel Y (coloca em 1)
+#define clr_bit(Y, bit_x) (Y &= ~(1 << bit_x)) //limpa o bit x da vari�vel Y (coloca em 0)
+#define tst_bit(Y, bit_x) (Y & (1 << bit_x))   //testa o bit x da vari�vel Y (retorna 0 ou 1)
+#define cpl_bit(Y, bit_x) (Y ^= (1 << bit_x))  //troca o estado do bit x da vari�vel Y (complementa)
 
-	
-	Lcd4_Init();
-	Lcd4_Clear();
-	Lcd4_Set_Cursor(1,0);
-	Lcd4_Write_String("Eng. Comp. UFSM");
-	Lcd4_Set_Cursor(2,0);
-	Lcd4_Write_String("  Hello World  ");
-	_delay_ms(3000);
-	
-	while (1)
-	{
-	}
-}
-
+/*############## VARIAVEIS ###################*/
+int flag_update_screen = 0; //Flag para atualizar o LCD apenas quando necessario
+float temperatura = 0.0;    //Variavel que contem o valor real da temperatura
+int16_t acc_leituras = 0;   //Acumulador de leituras (10x)
+float media_leituras = 0;   //Media aritmetica das leituras
+int n_samples = 0;          //Numero de amostras de leitura
+int16_t leitura_ad = 0;     //Variavel utilizada para efetuar a leitura do NTC (canal AD)
+long NTC_Resistance;        //Usado para determinar a resistencia do NTC
