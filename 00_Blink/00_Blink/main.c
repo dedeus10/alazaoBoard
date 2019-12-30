@@ -5,7 +5,7 @@
 --                                                                            --
 --------------------------------------------------------------------------------
 --                                                                            --
--- Design      : Alazão Board  v1.0	                                          --
+-- Design      : Alazï¿½o Board  v1.0	                                          --
 -- File		   : main.c					                                 	  --
 -- Author      : Luis Felipe de Deus                                          --
 --                                                                            --
