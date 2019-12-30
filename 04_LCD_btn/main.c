@@ -51,6 +51,7 @@
 
 void update_lcd(bool i){
 	Lcd4_Clear();
+	
 	Lcd4_Set_Cursor(1,0);
 	if(i == true)
 		Lcd4_Write_String("  Good Morning  ");
